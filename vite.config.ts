@@ -6,7 +6,7 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: '/raah-cafe---digital-menu/', // برای تنظیم مسیر درست در گیت‌هاب پیجز اضافه شد
+    base: '/raah-cafe-digital-menu/', // برای تنظیم مسیر درست در گیت‌هاب پیجز اضافه شد
     plugins: [react(), tailwindcss()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
