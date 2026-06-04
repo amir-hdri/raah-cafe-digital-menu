@@ -41,106 +41,36 @@ const MenuItemImage = ({ src, alt, className = "", priority = false }: { src: st
   const [error, setError] = useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
 
-  // Derive a tiny blur placeholder from Unsplash URL
-  const lqipUrl = React.useMemo(() => {
-    if (src && src.includes('images.unsplash.com')) {
-      const baseUrl = src.split('?')[0];
-      return `${baseUrl}?auto=format&fit=crop&w=40&q=10&fm=webp&blur=10`;
-    }
-    return '';
-  }, [src]);
-
-  // Generate responsive srcSet sizes for modern devices / viewports
-  const srcSet = React.useMemo(() => {
-    if (src && src.includes('images.unsplash.com') && src.includes('w=')) {
-      const w640 = src.replace(/w=\d+/, 'w=640');
-      const w1000 = src;
-      const w1400 = src.replace(/w=\d+/, 'w=1400');
-      return `${w640} 640w, ${w1000} 1000w, ${w1400} 1400w`;
-    }
-    return undefined;
-  }, [src]);
-
-  const sizes = srcSet ? "(max-width: 640px) 640px, (max-width: 1024px) 1000px, 1400px" : undefined;
-
   useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
+    setIsLoaded(false);
+    setError(false);
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
       setIsLoaded(true);
     }
   }, [src]);
 
-  // Preload priority images dynamically in the head to speed up layout rendering
-  useEffect(() => {
-    if (priority && src) {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'image';
-      link.href = src;
-      if (srcSet) {
-        link.imageSrcset = srcSet;
-        link.imageSizes = sizes || "";
-      }
-      document.head.appendChild(link);
-      return () => {
-        document.head.removeChild(link);
-      };
-    }
-  }, [src, priority, srcSet, sizes]);
-
   return (
-    <div className={`overflow-hidden relative rounded-[2rem] border border-white/10 bg-matte-gray shadow-[0_30px_60px_rgba(0,0,0,0.6)] ${className}`}>
-      {/* Low Quality Image Placeholder (Blur-up) */}
-      {lqipUrl && !isLoaded && !error && (
-        <img 
-          src={lqipUrl} 
-          alt="" 
-          className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-60 pointer-events-none transition-opacity duration-1000"
-        />
+    <div className={`overflow-hidden relative rounded-[2rem] border border-white/10 bg-white/5 shadow-[0_30px_60px_rgba(0,0,0,0.6)] ${className}`}>
+      {!isLoaded && !error && (
+        <div className="absolute inset-0 z-10 bg-white/[0.03] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent animate-shimmer" />
+        </div>
       )}
-
-      {/* Shimmer Placeholder / Error State */}
-      <AnimatePresence>
-        {!isLoaded && !error && (
-          <motion.div 
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-10"
-          >
-            <div className="w-full h-full bg-white/[0.03] overflow-hidden relative">
-              <motion.div 
-                animate={{ x: ["-100%", "200%"] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
-              />
-            </div>
-          </motion.div>
-        )}
-        {error && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-matte-gray p-6 text-center">
-            <Sparkles className="w-8 h-8 text-white/10 mb-4" />
-            <span className="text-[10px] text-white/20 uppercase tracking-widest font-light">Image unavailable</span>
-          </div>
-        )}
-      </AnimatePresence>
-
-      <motion.img 
+      {error && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/5 p-6 text-center">
+          <Sparkles className="w-8 h-8 text-white/10 mb-4" />
+          <span className="text-[10px] text-white/20 uppercase tracking-widest font-light">Image unavailable</span>
+        </div>
+      )}
+      <img
         ref={imgRef}
-        src={src} 
-        srcSet={srcSet}
-        sizes={sizes}
+        src={src}
         alt={alt}
         onLoad={() => setIsLoaded(true)}
         onError={() => setError(true)}
-        initial={{ opacity: 0, scale: 1.08 }}
-        animate={{ 
-          opacity: (isLoaded && !error) ? 1 : 0, 
-          scale: isLoaded ? 1 : 1.08 
-        }}
-        transition={{ duration: 1.2, ease: [0.215, 0.61, 0.355, 1] }}
-        style={{ willChange: 'transform, opacity' }}
-        className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700"
+        style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.6s ease' }}
+        className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-[filter,brightness] duration-700"
         loading={priority ? "eager" : "lazy"}
-        referrerPolicy="no-referrer"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-matte-black/60 via-transparent to-transparent pointer-events-none" />
     </div>
@@ -355,19 +285,18 @@ const MenuItemSection: React.FC<{ item: MenuItemData; idx: number; onSelect: (it
     <motion.div 
       key={item.id}
       layoutId={`item-${item.id}`}
-      initial={{ opacity: 0, y: 30, filter: 'blur(5px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      viewport={{ once: true, margin: "-50px" }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
       transition={{ 
-        delay: idx * 0.08, 
-        duration: 0.8, 
+        delay: Math.min(idx * 0.05, 0.3), 
+        duration: 0.5, 
         ease: [0.215, 0.61, 0.355, 1] 
       }}
-      whileHover={{ scale: 1.02, y: -2, backgroundColor: "rgba(255,255,255,0.02)" }}
+      whileHover={{ scale: 1.01, y: -1, backgroundColor: "rgba(255,255,255,0.02)" }}
       whileTap={{ scale: 0.98 }}
       onClick={addRipple}
-      style={{ willChange: 'transform, opacity' }}
-      className="group relative cursor-pointer py-4 px-4 rounded-[1.5rem] transition-all duration-500 overflow-hidden"
+      className="group relative cursor-pointer py-4 px-4 rounded-[1.5rem] transition-colors duration-300 overflow-hidden"
     >
       <AnimatePresence>
         {ripples.map((ripple) => (
@@ -595,10 +524,10 @@ export default function App() {
         {MENU_DATA.map((section) => (
           <section key={section.id} id={section.id} className="scroll-mt-32 group/section">
             <motion.div 
-              initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-col gap-4 mb-12 text-center items-center"
             >
               <div className="w-12 h-[1px] bg-white/20 mb-2" />
@@ -613,10 +542,10 @@ export default function App() {
             </motion.div>
 
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-              whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
               className="mb-12"
             >
               <MenuItemImage 

@@ -40,7 +40,7 @@ export const Logo = ({ size = 'md', animated = true }: { size?: 'sm' | 'md' | 'l
   };
 
   const pathVariants = {
-    initial: animated ? { opacity: 0, scale: 0.88, y: 12, rotate: -1 } : {},
+    initial: animated ? { opacity: 0, scale: 0.88, y: 12, rotate: -1 } : { opacity: 1, scale: 1, y: 0, rotate: 0 },
     animate: { 
       opacity: 1, 
       scale: 1, 
@@ -57,7 +57,7 @@ export const Logo = ({ size = 'md', animated = true }: { size?: 'sm' | 'md' | 'l
   };
 
   const tallBarVariants = {
-    initial: animated ? { opacity: 0, scaleY: 0 } : {},
+    initial: animated ? { opacity: 0, scaleY: 0 } : { opacity: 1, scaleY: 1 },
     animate: { 
       opacity: 1, 
       scaleY: 1, 
@@ -72,7 +72,7 @@ export const Logo = ({ size = 'md', animated = true }: { size?: 'sm' | 'md' | 'l
   };
 
   const shortBarVariants = {
-    initial: animated ? { opacity: 0, scaleY: 0 } : {},
+    initial: animated ? { opacity: 0, scaleY: 0 } : { opacity: 1, scaleY: 1 },
     animate: { 
       opacity: 1, 
       scaleY: 1, 
@@ -87,7 +87,7 @@ export const Logo = ({ size = 'md', animated = true }: { size?: 'sm' | 'md' | 'l
   };
 
   const text1Variants = {
-    initial: animated ? { opacity: 0, y: 15 } : {},
+    initial: animated ? { opacity: 0, y: 15 } : { opacity: 1, y: 0 },
     animate: { 
       opacity: 1, 
       y: 0, 
@@ -101,7 +101,7 @@ export const Logo = ({ size = 'md', animated = true }: { size?: 'sm' | 'md' | 'l
   };
 
   const text2Variants = {
-    initial: animated ? { opacity: 0, y: 15 } : {},
+    initial: animated ? { opacity: 0, y: 15 } : { opacity: 1, y: 0 },
     animate: { 
       opacity: 1, 
       y: 0, 
@@ -208,26 +208,8 @@ export const Logo = ({ size = 'md', animated = true }: { size?: 'sm' | 'md' | 'l
 export const PathDecoration = () => {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      <motion.div 
-        animate={{ 
-          x: [0, 50, 0],
-          y: [0, -30, 0],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        style={{ willChange: 'transform, opacity', translateZ: 0 }}
-        className="absolute top-[10%] left-[5%] w-[40vw] h-[40vw] bg-white/5 rounded-full blur-[100px] liquid-blob" 
-      />
-      <motion.div 
-        animate={{ 
-          x: [0, -50, 0],
-          y: [0, 30, 0],
-          scale: [1, 1.05, 1]
-        }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        style={{ willChange: 'transform, opacity', translateZ: 0 }}
-        className="absolute bottom-[20%] right-[0%] w-[35vw] h-[35vw] bg-white/[0.03] rounded-full blur-[80px] liquid-blob" 
-      />
+      <div className="absolute top-[10%] left-[5%] w-[40vw] h-[40vw] bg-white/[0.04] rounded-full blur-[80px]" />
+      <div className="absolute bottom-[20%] right-[0%] w-[35vw] h-[35vw] bg-white/[0.02] rounded-full blur-[60px]" />
     </div>
   );
 };
