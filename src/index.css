@@ -4,15 +4,25 @@
 @theme {
   --font-sans: "Vazirmatn", "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Outfit", "Vazirmatn", sans-serif;
-  
+
   --color-matte-black: #080808;
   --color-matte-white: #e0e0e0;
   --color-matte-gray: #151515;
+  --color-matte-mid: #1e1e1e;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
   outline: none;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -25,55 +35,39 @@ body {
   padding: 0;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-html {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
+::-webkit-scrollbar { display: none; }
 html, body {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Liquid Glass Elements */
-.liquid-glass {
-  background: rgba(20, 20, 20, 0.4);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-}
-
-.matte-gradient {
-  background: radial-gradient(circle at top left, #1a1a1a, #080808);
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* Fluid/Liquid Animations */
-@keyframes morph {
-  0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-  100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+/* Content visibility for off-screen sections — big perf win */
+.menu-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 800px;
 }
 
-.liquid-blob {
-  filter: blur(80px);
-  animation: morph 20s ease-in-out infinite;
-  opacity: 0.15;
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(224,224,224,0.9), rgba(224,224,224,0.3));
+  z-index: 200;
+  transform-origin: left;
+  transition: transform 0.1s linear;
+  border-radius: 0 2px 2px 0;
 }
 
 /* Shimmer loading animation */
@@ -81,17 +75,81 @@ html, body {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(300%); }
 }
-
 .animate-shimmer {
-  animation: shimmer 1.6s ease-in-out infinite;
+  animation: shimmer 1.8s ease-in-out infinite;
 }
 
-/* Typography Refinement */
+/* Fade-up utility */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Separator line */
+.section-rule {
+  width: 32px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+}
+
+/* Typography */
 h1, h2, h3 {
   font-family: var(--font-heading);
   letter-spacing: -0.02em;
 }
 
-p {
-  line-height: 1.85;
+p { line-height: 1.85; }
+
+/* Liquid Glass */
+.liquid-glass {
+  background: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+/* Nav glass */
+.nav-glass {
+  background: rgba(8, 8, 8, 0.75);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Image hover reveal */
+.img-reveal {
+  filter: grayscale(1) brightness(0.7);
+  transition: filter 0.6s ease;
+}
+.group:hover .img-reveal {
+  filter: grayscale(0) brightness(0.95);
+}
+
+/* Back to top button */
+.back-top {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.back-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Item row hover underline sweep */
+.item-row::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  transition: background 0.4s ease;
+}
+.item-row:hover::after {
+  background: rgba(255,255,255,0.18);
 }
