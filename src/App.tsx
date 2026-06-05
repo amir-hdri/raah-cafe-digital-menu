@@ -464,15 +464,6 @@ export default function App() {
 
         <Logo size="lg" />
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, duration: 0.8 }}
-          className="mt-8 text-[10px] md:text-[11px] text-white/20 uppercase tracking-[0.5em] font-light text-center"
-        >
-          همدان · منوی دیجیتال
-        </motion.p>
-
         <motion.div
           animate={{ y: [0, 7, 0] }}
           transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
