@@ -22,8 +22,8 @@ import { MENU_DATA, MenuItemData } from './constants';
 import { Logo, PathDecoration } from './components/Logo';
 
 /* ─── Category icon ────────────────────────────────────────────── */
-const CategoryIcon = ({ id }: { id: string }) => {
-  const p = { className: 'w-4 h-4' };
+const CategoryIcon = ({ id, className = 'w-4 h-4' }: { id: string; className?: string }) => {
+  const p = { className };
   switch (id) {
     case 'espresso':     return <Coffee   {...p} />;
     case 'iced-coffee':  return <Droplet  {...p} />;
@@ -477,31 +477,45 @@ export default function App() {
 
         <Logo size="lg" />
 
-        {/* Category Grid */}
+        {/* Category Icons Row / Carousel */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-2xl mt-12 grid grid-cols-2 sm:grid-cols-5 gap-3"
+          className="w-full max-w-2xl mt-12 flex overflow-x-auto no-scrollbar gap-5 px-4 justify-start md:justify-center py-2"
         >
           {MENU_DATA.map((section) => (
             <button
               key={section.id}
               onClick={() => scrollToSection(section.id)}
-              className="flex flex-col items-center justify-center p-4 bg-white/[0.03] border border-white/6 hover:border-white/20 rounded-2xl transition-all duration-300 hover:bg-white/[0.06] group cursor-pointer text-center"
+              className="flex-none flex flex-col items-center gap-2.5 group cursor-pointer w-20 text-center"
             >
-              <div className="p-3 bg-white/[0.03] group-hover:bg-white/[0.06] rounded-xl text-white/50 group-hover:text-white transition-colors duration-300 mb-3">
-                <CategoryIcon id={section.id} />
+              {/* Image Circle Container */}
+              <div className="relative w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-white/10 to-white/30 group-hover:from-white/30 group-hover:to-white/60 transition-all duration-500 shadow-lg flex-none">
+                <div className="w-full h-full rounded-full overflow-hidden bg-matte-gray relative">
+                  <img
+                    src={section.image}
+                    alt={section.title}
+                    className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 pointer-events-none" />
+                </div>
+                {/* Tiny Icon Badge */}
+                <div className="absolute -bottom-1 -right-1 p-1 bg-matte-black border border-white/10 rounded-full text-white/60 group-hover:text-white group-hover:border-white/30 transition-all duration-300 shadow-md">
+                  <CategoryIcon id={section.id} className="w-3 h-3" />
+                </div>
               </div>
-              <span className="text-[12px] font-bold text-white/70 group-hover:text-white transition-colors">
-                {section.title.split('(')[0].trim()}
-              </span>
-              <span className="text-[9px] text-white/30 group-hover:text-white/40 tracking-[0.2em] font-sans uppercase mt-1">
-                {section.title.includes('(') ? section.title.split('(')[1].replace(')', '').trim().split(' ')[0] : ''}
-              </span>
-              <span className="text-[9px] text-white/20 mt-2">
-                {section.items.length} آیتم
-              </span>
+
+              {/* Title */}
+              <div className="flex flex-col items-center">
+                <span className="text-[11px] font-bold text-white/70 group-hover:text-white transition-colors duration-300 leading-tight">
+                  {section.title.split('(')[0].trim()}
+                </span>
+                <span className="text-[8px] text-white/30 group-hover:text-white/40 tracking-wider font-sans uppercase mt-0.5 transition-colors duration-300">
+                  {section.title.includes('(') ? section.title.split('(')[1].replace(')', '').trim().split(' ')[0] : ''}
+                </span>
+              </div>
             </button>
           ))}
         </motion.div>
