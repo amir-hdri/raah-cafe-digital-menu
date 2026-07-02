@@ -393,8 +393,10 @@ const BackToTop = () => {
 export default function App() {
   const [activeTab, setActiveTab]       = useState(MENU_DATA[0].id);
   const [selectedItem, setSelectedItem] = useState<MenuItemData | null>(null);
+  const [isStickyVisible, setIsStickyVisible] = useState(false);
   const isScrollingRef = useRef(false);
   const navScrollRef   = useRef<HTMLDivElement>(null);
+  const headerRef      = useRef<HTMLElement>(null);
 
   const activeCategory = MENU_DATA.find(s => s.items.some(i => i.id === selectedItem?.id));
 
@@ -433,6 +435,17 @@ export default function App() {
     return () => obs.disconnect();
   }, []);
 
+  /* Header scroll visibility for sticky nav */
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      setIsStickyVisible(!entry.isIntersecting);
+    }, { root: null, threshold: 0 });
+    obs.observe(header);
+    return () => obs.disconnect();
+  }, []);
+
   /* Lock body scroll when modal open */
   useEffect(() => {
     document.body.style.overflow = selectedItem ? 'hidden' : '';
@@ -440,7 +453,7 @@ export default function App() {
   }, [selectedItem]);
 
   return (
-    <div className="relative min-h-screen bg-matte-black text-matte-white selection:bg-matte-white selection:text-matte-black overflow-x-hidden font-sans">
+    <div className="relative min-h-screen bg-matte-black text-matte-white selection:bg-matte-white selection:text-matte-black overflow-x-clip font-sans">
       <ScrollProgress />
       <PathDecoration />
       <BackToTop />
@@ -456,51 +469,90 @@ export default function App() {
       </AnimatePresence>
 
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="relative pt-24 pb-20 flex flex-col items-center justify-center border-b border-white/5 z-10 px-6 overflow-hidden">
+      <header ref={headerRef} className="relative pt-24 pb-16 flex flex-col items-center justify-center border-b border-white/5 z-10 px-6 overflow-hidden">
         {/* subtle radial glow behind logo */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[60vw] h-[40vw] max-w-lg max-h-64 bg-white/[0.025] rounded-full blur-[60px]" />
+          <div className="w-[80vw] h-[50vw] max-w-xl max-h-80 bg-white/[0.02] rounded-full blur-[80px]" />
         </div>
 
         <Logo size="lg" />
 
+        {/* Category Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-2xl mt-12 grid grid-cols-2 sm:grid-cols-5 gap-3"
+        >
+          {MENU_DATA.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => scrollToSection(section.id)}
+              className="flex flex-col items-center justify-center p-4 bg-white/[0.03] border border-white/6 hover:border-white/20 rounded-2xl transition-all duration-300 hover:bg-white/[0.06] group cursor-pointer text-center"
+            >
+              <div className="p-3 bg-white/[0.03] group-hover:bg-white/[0.06] rounded-xl text-white/50 group-hover:text-white transition-colors duration-300 mb-3">
+                <CategoryIcon id={section.id} />
+              </div>
+              <span className="text-[12px] font-bold text-white/70 group-hover:text-white transition-colors">
+                {section.title.split('(')[0].trim()}
+              </span>
+              <span className="text-[9px] text-white/30 group-hover:text-white/40 tracking-[0.2em] font-sans uppercase mt-1">
+                {section.title.includes('(') ? section.title.split('(')[1].replace(')', '').trim().split(' ')[0] : ''}
+              </span>
+              <span className="text-[9px] text-white/20 mt-2">
+                {section.items.length} آیتم
+              </span>
+            </button>
+          ))}
+        </motion.div>
+
         <motion.div
           animate={{ y: [0, 7, 0] }}
           transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
-          className="absolute bottom-8"
+          className="mt-12"
         >
           <ArrowDownCircle className="w-5 h-5 text-white/12" />
         </motion.div>
       </header>
 
       {/* ── Sticky nav ─────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-[60] nav-glass py-4">
-        <div ref={navScrollRef} className="max-w-2xl mx-auto flex overflow-x-auto no-scrollbar gap-2.5 px-5">
-          {MENU_DATA.map(section => (
-            <button
-              key={section.id}
-              id={`nav-${section.id}`}
-              type="button"
-              onClick={() => scrollToSection(section.id)}
-              className={`flex-none px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-[0.04em] uppercase flex items-center gap-2 whitespace-nowrap border relative transition-colors duration-200 ${
-                activeTab === section.id
-                  ? 'text-matte-black border-transparent'
-                  : 'bg-white/[0.04] text-white/40 border-white/6 hover:text-white/70 hover:border-white/15'
-              }`}
-            >
-              {activeTab === section.id && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute inset-0 bg-matte-white rounded-xl -z-10 shadow-lg"
-                  transition={{ type: 'spring', bounce: 0.18, duration: 0.55 }}
-                />
-              )}
-              <CategoryIcon id={section.id} />
-              <span>{section.title.split('(')[0].trim()}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
+      <AnimatePresence>
+        {isStickyVisible && (
+          <motion.nav
+            initial={{ y: -80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -80, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="sticky top-0 z-[60] nav-glass py-4"
+          >
+            <div ref={navScrollRef} className="max-w-2xl mx-auto flex overflow-x-auto no-scrollbar gap-2.5 px-5">
+              {MENU_DATA.map(section => (
+                <button
+                  key={section.id}
+                  id={`nav-${section.id}`}
+                  type="button"
+                  onClick={() => scrollToSection(section.id)}
+                  className={`flex-none px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-[0.04em] uppercase flex items-center gap-2 whitespace-nowrap border relative transition-colors duration-200 ${
+                    activeTab === section.id
+                      ? 'text-matte-black border-transparent'
+                      : 'bg-white/[0.04] text-white/40 border-white/6 hover:text-white/70 hover:border-white/15'
+                  }`}
+                >
+                  {activeTab === section.id && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-matte-white rounded-xl -z-10 shadow-lg"
+                      transition={{ type: 'spring', bounce: 0.18, duration: 0.55 }}
+                    />
+                  )}
+                  <CategoryIcon id={section.id} />
+                  <span>{section.title.split('(')[0].trim()}</span>
+                </button>
+              ))}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
       {/* ── Main content ───────────────────────────────────────── */}
       <main className="max-w-2xl mx-auto px-5 py-10 space-y-20 pb-48 relative z-10">

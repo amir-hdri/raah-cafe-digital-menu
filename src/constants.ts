@@ -1,3 +1,9 @@
+import espressoImg from './assets/images/espresso.jpg';
+import icedCoffeeImg from './assets/images/iced_coffee.jpg';
+import shakesImg from './assets/images/shakes.jpg';
+import hotComfortsImg from './assets/images/hot_comforts.jpg';
+import refreshersImg from './assets/images/refreshers.jpg';
+
 export interface MenuItemData {
   id: string;
   name: string;
@@ -21,7 +27,7 @@ export const MENU_DATA: MenuSection[] = [
   {
     id: 'espresso',
     title: 'بار اسپرسو (Espresso Bar)',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1000&q=80&fm=webp',
+    image: espressoImg,
     items: [
       { id: 'e1', name: 'اسپرسو', price: { commercial: '۸۵', premium: '۱۲۰' }, description: 'Concentrated pure coffee shot with rich golden crema.', calories: 5, caffeine: 'High (85mg)', serving: '45ml', origins: 'Brazil / Ethiopia / Colombia' },
       { id: 'e2', name: 'دوپیو', price: { commercial: '۱۱۰', premium: '۱۶۰' }, description: 'Intense double espresso shot. Double the flavor.', calories: 10, caffeine: 'High (170mg)', serving: '90ml', origins: 'Colombia / Brazil / Ethiopia' },
@@ -41,7 +47,7 @@ export const MENU_DATA: MenuSection[] = [
   {
     id: 'iced-coffee',
     title: 'بار قهوه سرد (Iced Coffee)',
-    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1000&q=80&fm=webp',
+    image: icedCoffeeImg,
     items: [
       { id: 'cc9', name: 'کن هیلو', price: { commercial: '۱۱۰', premium: '۱۶۰' }, description: 'Minimalist espresso served over a single giant ice block.', calories: 5, caffeine: 'High (85mg)', serving: '60ml', origins: 'Brazil / Ethiopia' },
       { id: 'cc8', name: 'آفوگاتو', price: { commercial: '۲۱۵', premium: '۲۶۵' }, description: 'Premium vanilla bean gelato drowned in a hot espresso shot.', calories: 190, caffeine: 'Medium (85mg)', serving: '150ml', origins: 'Madagascar Vanilla' },
@@ -58,7 +64,7 @@ export const MENU_DATA: MenuSection[] = [
   {
     id: 'shakes',
     title: 'انواع شیک (Shakes)',
-    image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=1000&q=80&fm=webp',
+    image: shakesImg,
     items: [
       { id: 'sh1', name: 'فراست بری', price: '۲۳۰', description: 'Zesty premium wild forest berry shake. Ice-cold.', calories: 180, caffeine: 'None', serving: '450ml', origins: 'Wild Berries' },
       { id: 'sh2', name: 'شیک لوتوس', price: '۲۵۰', description: 'Lotus Biscoff cookie butter gourmet thick shake.', calories: 510, caffeine: 'None', serving: '450ml', origins: 'Lotus Biscoff' },
@@ -77,7 +83,7 @@ export const MENU_DATA: MenuSection[] = [
   {
     id: 'hot-comforts',
     title: 'سایر نوشیدنیهای گرم (Hot Comforts)',
-    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1000&q=80&fm=webp',
+    image: hotComfortsImg,
     items: [
       { id: 'hc1', name: 'هات چاکلت', price: { commercial: '۱۶۰', premium: '۱۷۵' }, description: 'Luxurious classic rich melted Belgian chocolate.', calories: 280, caffeine: 'Low (10mg)', serving: '320ml / 400ml', origins: 'Belgian Cocoa' },
       { id: 'hc2', name: 'وایت چاکلت', price: { commercial: '۱۴۰', premium: '۱۵۵' }, description: 'Creamy and sweet premium white hot chocolate.', calories: 310, caffeine: 'None', serving: '320ml / 400ml', origins: 'Swiss White Chocolate' },
@@ -101,7 +107,7 @@ export const MENU_DATA: MenuSection[] = [
   {
     id: 'refreshers',
     title: 'اسموتی، سردنوش، چای و دمنوش (Refreshers & Tea)',
-    image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=1000&q=80&fm=webp',
+    image: refreshersImg,
     items: [
       { id: 'r1_sea', name: 'اسموتی فصل', price: '! Ask (از صندوق بپرسید)', description: 'Fresh seasonal fruits blended to perfection. Ask cashier for details.', calories: 160, caffeine: 'None', serving: '450ml', origins: 'Fresh Seasonal' },
       { id: 'r1', name: 'لیموناد', price: '۱۸۰', description: 'Freshly squeezed lemon juice, light syrup, and cold sparkling club soda.', calories: 130, caffeine: 'None', serving: '400ml', origins: 'Fresh Citrus' },
